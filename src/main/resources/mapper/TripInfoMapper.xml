@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.tripshot.map.mapper.TripInfoMapper">
+
+	<!-- 리절트 맵 정의. primary key 컬럼은 id 태그로 표시해줌 select 한후의 컬럼명과 vo안의 필드명이 일치하지 
+		않아서 둘간의 관계를 나타낼때 사용 -->
+	<resultMap id="JoinResult" type="AttractionInfo">
+		<result column="empid" property="num" />
+		<result column="fname" property="pass" />
+		<result column="deptid" property="name" />
+		<result column="deptname" property="wdate" />
+	</resultMap>
+
+	<select id="selectAll" resultType="AttractionInfo">
+		select * from attraction_info
+	</select>
+
+
+	<select id="selectOne" resultType="AttractionInfo"
+		parameterType="String">
+		select * from attraction_info where content_id =
+		#{content_id}
+
+	</select>
+
+	<select id="search" parameterType="java.util.Map"
+		resultType="AttractionInfo">
+		select first_image,title,addr1 from attraction_info
+		<where>
+			<if test="location != 'null'">
+				sido_code = #{location}
+				<if test="category != 'null' or word != 'null'">
+					AND
+				</if>
+			</if>
+			<if test="category != 'null'">
+				content_type_id = #{category}
+				<if test="word != 'null'">
+					AND
+				</if>
+			</if>
+			<if test="word != 'null'">
+				title like CONCAT('%', #{word},'%')
+			</if>
+
+		</where>
+
+	</select>
+
+</mapper>
+
+
+
