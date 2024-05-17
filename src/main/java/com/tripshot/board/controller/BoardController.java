@@ -55,6 +55,11 @@ public class BoardController {
         return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 목록 조회 성공", response), HttpStatus.OK);
     }
 
+    /**
+     * 게시글 상세조회
+     * @param id board(게시글)의 고유한id
+     * @return 해당하는 고유한 게시글
+     */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Board>> detail(@PathVariable("id") Long id){
         System.out.println("in getMapping + id=" + id);
