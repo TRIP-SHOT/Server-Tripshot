@@ -9,6 +9,8 @@ public interface BoardService {
 
 	List<Board> selectAll();
 	List<Board> search(String season, String startDate, String endDate, String keyword);
+	Board selectOne(Long id);
+
 
 //	Board selectOne(String num);
 //

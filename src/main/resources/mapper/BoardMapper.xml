@@ -5,6 +5,27 @@
 
 <mapper namespace = "com.tripshot.board.mapper.BoardMapper">
 
+	<select id="selectOne" resultType="Board">
+		select
+			id,
+			user_id as userId,
+			title,
+			create_date as createDate,
+			weather,
+			season,
+			shoot_date as shootDate,
+			image,
+			content,
+			spot,
+			hit,
+			heart_count as heartCount,
+			ST_X(coordinate) AS longitude,
+			ST_Y(coordinate) AS latitude
+		from board
+		where id = #{id}
+	</select>
+
+
 	<select id="selectAll" resultType="Board">
 		select
 			id,

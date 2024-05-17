@@ -13,8 +13,7 @@ public interface BoardMapper {
 	List<Board> selectAll();
 	List<Board> search(String season, String startDate, String endDate, String keyword);
 
-//	List<Board> search(String keyword);
-//
+	Board selectOne(Long id);
 //	Board selectOne(String num);
 //
 //	void countUp(String num);

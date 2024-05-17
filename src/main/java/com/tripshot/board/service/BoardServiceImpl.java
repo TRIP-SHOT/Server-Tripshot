@@ -11,7 +11,6 @@ import com.tripshot.board.mapper.BoardMapper;
 
 @Service
 public class BoardServiceImpl implements BoardService {
-
 	@Autowired
 	BoardMapper mapper;
 	
@@ -25,6 +24,11 @@ public class BoardServiceImpl implements BoardService {
 		return mapper.search(season,startDate,endDate,keyword);
 	}
 
+	@Override
+	public Board selectOne(Long id) {
+		System.out.println("id="+id);
+		return mapper.selectOne(id);
+	}
 
 //	@Override
 //	public Board selectOne(String num) {
