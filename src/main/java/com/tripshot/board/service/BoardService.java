@@ -8,6 +8,7 @@ import com.tripshot.board.dto.Board;
 public interface BoardService {
 
 	List<Board> selectAll();
+	List<Board> search(String season, String startDate, String endDate, String keyword);
 
 //	Board selectOne(String num);
 //

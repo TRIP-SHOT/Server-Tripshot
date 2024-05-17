@@ -1,9 +1,11 @@
 package com.tripshot.board.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -26,15 +28,28 @@ import com.tripshot.global.ApiResponse;
 @RestController
 @RequiredArgsConstructor
 public class BoardController {
-	
-	private final BoardService service;
 
-	@GetMapping
-	public  ResponseEntity<ApiResponse<List<Board>>> list(){
-		System.out.println("in list");
-		List<Board> list =service.selectAll();
-		return new ResponseEntity(new ApiResponse(HttpStatus.OK,"게시글 조회 성공", list), HttpStatus.OK);
-	}
+    private final BoardService service;
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<Board>>> list(
+            @RequestParam(value = "season", required = false) String season,
+            @RequestParam(value = "startdate", required = false)  String startDate,
+            @RequestParam(value = "enddate", required = false) String endDate,
+            @RequestParam(value = "keyword", required = false) String keyword
+    ) {
+        System.out.println("season = " + season + ", startDate = "+ startDate + ", endDate = "+endDate);
+        List<Board> response = null;
+        if (season != null || startDate != null || endDate != null || keyword != null) {//검색 조건이 있는 경우
+            System.out.println("검색조건 존재");
+            response = service.search(season, startDate, endDate, keyword);
+        } else { //검색 기준이 없는 경우
+            System.out.println("검색조건 없음");
+
+            response = service.selectAll();
+        }
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 조회 성공", response), HttpStatus.OK);
+    }
 //
 //	@GetMapping("/list")
 //	public ResponseEntity<ApiResponse<List<Board>>> list(){

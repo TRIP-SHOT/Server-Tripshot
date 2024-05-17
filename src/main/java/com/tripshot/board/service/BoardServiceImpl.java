@@ -17,9 +17,14 @@ public class BoardServiceImpl implements BoardService {
 	
 	@Override
 	public List<Board> selectAll() {
-		List<Board> list = mapper.selectAll();
-		return list;
+		return mapper.selectAll();
 	}
+
+	@Override
+	public List<Board> search(String season, String startDate, String endDate, String keyword){
+		return mapper.search(season,startDate,endDate,keyword);
+	}
+
 
 //	@Override
 //	public Board selectOne(String num) {
