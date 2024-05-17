@@ -21,36 +21,36 @@ public class BoardServiceImpl implements BoardService {
 		return list;
 	}
 
-	@Override
-	public Board selectOne(String num) {
-		Board b = mapper.selectOne(num);
-		mapper.countUp(num);
-		return b;
-	}
-
-	@Override
-	public void insert(Board b) {
-		mapper.insert(b);
-	}
-
-	@Override
-	public void modifyContent(String content, String num) {
-		mapper.modifyContent(content, num);
-	}
-
-	@Override
-	public void delete(String num) {
-		mapper.delete(num);
-	}
-
-	@Override
-	public List<Board> search(String keyword) {
-		return mapper.search(keyword);
-	}
-
-	@Override
-	public void modify(Board b) {
-		mapper.modify(b);
-	}
+//	@Override
+//	public Board selectOne(String num) {
+//		Board b = mapper.selectOne(num);
+//		mapper.countUp(num);
+//		return b;
+//	}
+//
+//	@Override
+//	public void insert(Board b) {
+//		mapper.insert(b);
+//	}
+//
+//	@Override
+//	public void modifyContent(String content, String num) {
+//		mapper.modifyContent(content, num);
+//	}
+//
+//	@Override
+//	public void delete(String num) {
+//		mapper.delete(num);
+//	}
+//
+//	@Override
+//	public List<Board> search(String keyword) {
+//		return mapper.search(keyword);
+//	}
+//
+//	@Override
+//	public void modify(Board b) {
+//		mapper.modify(b);
+//	}
 
 }

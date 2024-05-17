@@ -12,18 +12,18 @@ public interface BoardMapper {
 
 	List<Board> selectAll();
 
-	List<Board> search(String keyword);
-
-	Board selectOne(String num);
-
-	void countUp(String num);
-
-	void insert(Board b);
-
-	void modifyContent(String content, String num);
-	
-	void modify(Board b);
-
-	void delete(String num);
+//	List<Board> search(String keyword);
+//
+//	Board selectOne(String num);
+//
+//	void countUp(String num);
+//
+//	void insert(Board b);
+//
+//	void modifyContent(String content, String num);
+//
+//	void modify(Board b);
+//
+//	void delete(String num);
 
 }
