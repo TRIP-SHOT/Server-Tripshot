@@ -1,13 +1,21 @@
 package com.tripshot.board.controller;
 
+import com.tripshot.board.dto.WriteBoardRequestDto;
+import com.tripshot.board.dto.WriteBoardResponseDto;
+import com.tripshot.global.util.s3.S3Uploader;
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -21,63 +29,93 @@ import com.tripshot.board.service.BoardService;
 import com.tripshot.global.ApiResponse;
 
 @CrossOrigin("*")
-@RequestMapping("/board")
+@RequestMapping("/boards")
 @RestController
+@RequiredArgsConstructor
 public class BoardController {
-	
-	BoardService service;
-	
-	@Autowired
-	public BoardController(BoardService service) {
-		this.service = service;
-	}
 
-	@GetMapping("/list")
-	public ResponseEntity<ApiResponse<List<Board>>> list(){
-		List<Board> list = service.selectAll();
-		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 조회 성공", list), HttpStatus.OK); 
-	}
-	
-	@GetMapping("/search")
-	public ResponseEntity<ApiResponse<List<Board>>> search(@RequestParam("keyword") String keyword){
-		List<Board> list = service.search(keyword);
-		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 키워드 검색 성공", list), HttpStatus.OK); 
-	}
-	
-	@GetMapping("/list/{num}")
-	public  ResponseEntity<ApiResponse<Board>> detail(@PathVariable String num){
-		Board b = service.selectOne(num);
-		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 상세조회 성공", b), HttpStatus.OK); 
+    private final BoardService service;
+    private final S3Uploader s3Uploader;
+    private final String DIR = "album";
+    /**
+     * 조회 및 검색
+     * @param season 계절(봄,여름,가을,겨울)
+     * @param startDate 필터시작일
+     * @param endDate 종료일
+     * @param keyword 검색어
+     * @return 게시글 목록
+     */
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<Board>>> list(
+            @RequestParam(value = "season", required = false) String season,
+            @RequestParam(value = "startdate", required = false)  String startDate,
+            @RequestParam(value = "enddate", required = false) String endDate,
+            @RequestParam(value = "keyword", required = false) String keyword
+    ) {
+        List<Board> response = null;
+        if (season != null || startDate != null || endDate != null || keyword != null) {//검색 조건이 있는 경우
+            response = service.search(season, startDate, endDate, keyword);
+        } else { //검색 기준이 없는 경우
+            response = service.selectAll();
+        }
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 목록 조회 성공", response), HttpStatus.OK);
+    }
 
-	}
-	
-	@PostMapping("/insert")
-	public ResponseEntity insert(@RequestBody Board b) {
-		System.out.println(b+"in insert");
-		service.insert(b);
-		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 작성 성공", b), HttpStatus.OK); 
-	}
-	
-	@PutMapping("/modifyContent")
-	public ResponseEntity modifyContent(@RequestBody Board b) {
-		System.out.println("inupdate"+ b);
-		service.modify(b);
-		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 수정 성공", b), HttpStatus.OK); 
+    /**
+     * 게시글 상세조회
+     * @param id board(게시글)의 고유한 id
+     * @return 해당하는 고유한 게시글
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<Board>> detail(@PathVariable("id") Long id){
+        Board response = service.selectOne(id);
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 상세조회 조회 성공", response), HttpStatus.OK);
+    }
 
-	}
-	
-//	@PutMapping("/modifyContent/{num}")
-//	public ResponseEntity modifyContent(@RequestBody Board b, @PathVariable String num) {
-//		System.out.println("inupdate"+ b +" "+num);
-//		service.modifyContent(b.getContent(), num);
-//		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 수정 성공", b), HttpStatus.OK); 
-//
-//	}
-//	
-	@DeleteMapping("/delete/{num}")
-	public ResponseEntity delete(@PathVariable String num) {
-		service.delete(num);
-		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 삭제 성공", null), HttpStatus.OK); 
+    /**
+     * 게시글 작성
+     * @param request 게시글 작성에 필요한 값들
+     * @return 고유id
+     */
+    @PostMapping
+    public ResponseEntity<ApiResponse<?>> writeBoard(@ModelAttribute WriteBoardRequestDto request) throws IOException {
+        //request의 image는 multipartFile, 이를 s3에 업로드하여 url을 생성한뒤 게시글등록 과정에 사용함.
+        Board board = request.toBoard();
+        String[] keyAndUrl = s3Uploader.upload(request.getImage(), DIR);
+        board.setImageKey(keyAndUrl[0]);
+        board.setImage(keyAndUrl[1]);
 
-	}
+        service.insertBoard(board);
+        WriteBoardResponseDto response = new WriteBoardResponseDto(board.getId());
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 생성 성공", response), HttpStatus.OK);
+    }
+
+    /**
+     * 게시글 수정
+     * @param request
+     * @return
+     * @throws IOException
+     */
+    @PutMapping
+    public ResponseEntity<ApiResponse<?>> updateBoard(@ModelAttribute WriteBoardRequestDto request) throws IOException {
+
+        Board board = request.toBoard();
+        String[] keyAndUrl = s3Uploader.upload(request.getImage(), DIR);
+        board.setImageKey(keyAndUrl[0]);
+        board.setImage(keyAndUrl[1]);
+        service.updateBoard(board);
+        //service - 게시글 id를 통해서 해당 내용을 모두 엎어쓰기한다.
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 수정 성공", null), HttpStatus.OK);
+    }
+
+    /**
+     * 게시글 삭제
+     * @param id
+     * @return
+     */
+    @DeleteMapping
+    public ResponseEntity<ApiResponse<?>> deleteBoard(@RequestParam("id") Long id){
+        service.deleteBoard(id);
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 삭제 성공", null), HttpStatus.OK);
+    }
 }
