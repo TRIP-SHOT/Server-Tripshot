@@ -90,6 +90,12 @@ public class BoardController {
         return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 생성 성공", response), HttpStatus.OK);
     }
 
+    /**
+     * 게시글 수정
+     * @param request
+     * @return
+     * @throws IOException
+     */
     @PutMapping
     public ResponseEntity<ApiResponse<?>> updateBoard(@ModelAttribute WriteBoardRequestDto request) throws IOException {
 
@@ -100,5 +106,16 @@ public class BoardController {
         service.updateBoard(board);
         //service - 게시글 id를 통해서 해당 내용을 모두 엎어쓰기한다.
         return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 수정 성공", null), HttpStatus.OK);
+    }
+
+    /**
+     * 게시글 삭제
+     * @param id
+     * @return
+     */
+    @DeleteMapping
+    public ResponseEntity<ApiResponse<?>> deleteBoard(@RequestParam("id") Long id){
+        service.deleteBoard(id);
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 삭제 성공", null), HttpStatus.OK);
     }
 }

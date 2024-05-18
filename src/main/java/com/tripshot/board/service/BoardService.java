@@ -12,6 +12,7 @@ public interface BoardService {
 	Board selectOne(Long id);
 	int insertBoard(Board board);
 	int updateBoard(Board board);
+	int deleteBoard(Long id);
 
 //	Board selectOne(String num);
 //

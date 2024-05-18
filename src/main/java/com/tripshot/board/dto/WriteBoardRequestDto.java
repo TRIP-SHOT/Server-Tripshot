@@ -9,8 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 public class WriteBoardRequestDto {
-    private int id;//pk
-    private int userId;//user가 로그인에 사용하는 id
+    private Long id;//pk
+    private int userId;//user의 고유id
     private String title;//제목
     private String createDate;//생성시간
     private String weather;//날씨

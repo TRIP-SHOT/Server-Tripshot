@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class Board {
-    private int id;//pk
+    private Long id;//pk
     private int userId;//user가 로그인에 사용하는 id
     private String title;//제목
     private String createDate;//생성시간

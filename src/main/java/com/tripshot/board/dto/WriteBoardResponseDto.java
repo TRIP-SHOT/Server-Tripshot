@@ -6,5 +6,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class WriteBoardResponseDto {
-    private final int id;
+    private final Long id;
 }

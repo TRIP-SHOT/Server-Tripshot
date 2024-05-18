@@ -15,5 +15,6 @@ public interface BoardMapper {
 	Board selectOne(Long id);
 	int insertBoard(Board board);
 	int updateBoard(Board board);
-	String selectImageKey(int id);
+	String selectImageKey(Long id);
+	int deleteBoard(Long id);
 }
