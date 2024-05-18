@@ -1,5 +1,9 @@
 package com.tripshot.board.controller;
 
+import com.tripshot.board.dto.WriteBoardRequestDto;
+import com.tripshot.board.dto.WriteBoardResponseDto;
+import com.tripshot.global.util.s3.S3Uploader;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -11,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -30,7 +35,8 @@ import com.tripshot.global.ApiResponse;
 public class BoardController {
 
     private final BoardService service;
-
+    private final S3Uploader s3Uploader;
+    private final String DIR = "album";
     /**
      * 조회 및 검색
      * @param season 계절(봄,여름,가을,겨울)
@@ -57,14 +63,29 @@ public class BoardController {
 
     /**
      * 게시글 상세조회
-     * @param id board(게시글)의 고유한id
+     * @param id board(게시글)의 고유한 id
      * @return 해당하는 고유한 게시글
      */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<Board>> detail(@PathVariable("id") Long id){
-        System.out.println("in getMapping + id=" + id);
         Board response = service.selectOne(id);
-
         return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 상세조회 조회 성공", response), HttpStatus.OK);
+    }
+
+    /**
+     * 게시글 작성
+     * @param request 게시글 작성에 필요한 값들
+     * @return 고유id
+     */
+    @PostMapping
+    public ResponseEntity<ApiResponse<?>> writeBoard(@ModelAttribute WriteBoardRequestDto request) throws IOException {
+        //request의 image는 multipartFile, 이를 s3에 업로드하여 url을 생성한뒤 게시글등록 과정에 사용함.
+        Board board = request.toBoard();
+        String imageUrl = s3Uploader.upload(request.getImage(), DIR);
+        board.setImage(imageUrl);
+
+        service.insertBoard(board);
+        WriteBoardResponseDto response = new WriteBoardResponseDto(board.getId());
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 생성 성공", response), HttpStatus.OK);
     }
 }

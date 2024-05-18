@@ -1,17 +1,14 @@
 package com.tripshot.board.dto;
 
-import java.time.LocalDateTime;
-
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
-@Builder
-public class Board {
+public class WriteBoardRequestDto {
     private int id;//pk
     private int userId;//user가 로그인에 사용하는 id
     private String title;//제목
@@ -19,11 +16,22 @@ public class Board {
     private String weather;//날씨
     private String season;//계절
     private String shootDate;//사진찍은날
-    private String image;//사진
     private String content;//내용
     private String spot;//장소
     private int hit;//조회수
     private int heartCount;//좋아요수
     private double longitude;//경도
     private double latitude;//위도
+    private MultipartFile image;//사진
+
+    public Board toBoard() {
+        Board board = Board.builder()
+                .userId(userId)
+                .title(title).createDate(createDate).weather(weather).season(season).shootDate(shootDate)
+                .content(content).spot(spot).hit(hit).heartCount(heartCount).longitude(longitude).latitude(latitude)
+                .build();
+        return board;
+    }
 }
+
+

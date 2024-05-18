@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service;
 
 import com.tripshot.board.dto.Board;
 import com.tripshot.board.mapper.BoardMapper;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@Transactional
 public class BoardServiceImpl implements BoardService {
 	@Autowired
 	BoardMapper mapper;
@@ -26,8 +28,12 @@ public class BoardServiceImpl implements BoardService {
 
 	@Override
 	public Board selectOne(Long id) {
-		System.out.println("id="+id);
 		return mapper.selectOne(id);
+	}
+
+	@Override
+	public int insertBoard(Board board) {
+		return mapper.insertBoard(board);
 	}
 
 //	@Override
