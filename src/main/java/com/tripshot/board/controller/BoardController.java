@@ -81,11 +81,24 @@ public class BoardController {
     public ResponseEntity<ApiResponse<?>> writeBoard(@ModelAttribute WriteBoardRequestDto request) throws IOException {
         //request의 image는 multipartFile, 이를 s3에 업로드하여 url을 생성한뒤 게시글등록 과정에 사용함.
         Board board = request.toBoard();
-        String imageUrl = s3Uploader.upload(request.getImage(), DIR);
-        board.setImage(imageUrl);
+        String[] keyAndUrl = s3Uploader.upload(request.getImage(), DIR);
+        board.setImageKey(keyAndUrl[0]);
+        board.setImage(keyAndUrl[1]);
 
         service.insertBoard(board);
         WriteBoardResponseDto response = new WriteBoardResponseDto(board.getId());
         return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 생성 성공", response), HttpStatus.OK);
+    }
+
+    @PutMapping
+    public ResponseEntity<ApiResponse<?>> updateBoard(@ModelAttribute WriteBoardRequestDto request) throws IOException {
+
+        Board board = request.toBoard();
+        String[] keyAndUrl = s3Uploader.upload(request.getImage(), DIR);
+        board.setImageKey(keyAndUrl[0]);
+        board.setImage(keyAndUrl[1]);
+        service.updateBoard(board);
+        //service - 게시글 id를 통해서 해당 내용을 모두 엎어쓰기한다.
+        return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 수정 성공", null), HttpStatus.OK);
     }
 }

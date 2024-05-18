@@ -1,23 +1,17 @@
 package com.tripshot.global.util.s3;
 
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class S3Uploader {
@@ -32,7 +26,7 @@ public class S3Uploader {
      * @return s3에 업로드된 이미지의 url
      * @throws IOException
      */
-    public String upload(MultipartFile multipartFile, String dirName) throws IOException {
+    public String[] upload(MultipartFile multipartFile, String dirName) throws IOException {
         String fileName = generateFileName(multipartFile);
         //메타데이터 생성
         ObjectMetadata metadata = new ObjectMetadata();
@@ -42,7 +36,11 @@ public class S3Uploader {
         amazonS3Client.putObject(new PutObjectRequest(bucket, dirName + "/" + fileName, multipartFile.getInputStream(), metadata)
                 .withCannedAcl(CannedAccessControlList.PublicRead));
 
-        return amazonS3Client.getUrl(bucket, dirName + "/" + fileName).toString();
+        //키와 url을 동시에 반환해야함
+        String key = dirName + "/"+fileName;
+        String url = amazonS3Client.getUrl(bucket, key).toString();
+        String[] keyAndUrl = {key,url};
+        return keyAndUrl;
     }
 
     private String generateFileName(MultipartFile multipartFile) {
@@ -55,6 +53,5 @@ public class S3Uploader {
      */
     public void deleteFile(String key) {
         amazonS3Client.deleteObject(bucket, key);
-        log.info("파일이 삭제되었습니다. 키: {}", key);
     }
 }

@@ -4,6 +4,33 @@
    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace = "com.tripshot.board.mapper.BoardMapper">
+	<!--게시글 수정-->
+	<update id="updateBoard" parameterType="Board">
+		UPDATE board
+		SET
+			user_id = #{userId},
+			title = #{title},
+			weather = #{weather},
+			season = #{season},
+			shoot_date = #{shootDate},
+			image = #{image},
+			content = #{content},
+			spot = #{spot},
+			hit = #{hit},
+			heart_count = #{heartCount},
+			coordinate = ST_GeomFromText('POINT(${longitude} ${latitude})'),
+			image_key = #{imageKey}
+		WHERE
+			id = #{id}
+	</update>
+
+	<!--imageurl 조회-->
+	<select id="selectImageKey" resultType="String">
+		select
+			image_key
+		from board
+		where id = #{id}
+	</select>
 	<!-- 게시글 생성 -->
 	<insert id="insertBoard" parameterType="Board" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
 		INSERT INTO board (
@@ -18,7 +45,8 @@
 			spot,
 			hit,
 			heart_count,
-			coordinate
+			coordinate,
+			image_key
 		) VALUES (
 					 #{userId},
 					 #{title},
@@ -31,7 +59,8 @@
 					 #{spot},
 					 #{hit},
 					 #{heartCount},
-					 ST_GeomFromText('POINT(${longitude} ${latitude})')
+					 ST_GeomFromText('POINT(${longitude} ${latitude})'),
+		          	#{imageKey}
 				 )
 	</insert>
 

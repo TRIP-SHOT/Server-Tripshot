@@ -26,6 +26,7 @@ public class WriteBoardRequestDto {
 
     public Board toBoard() {
         Board board = Board.builder()
+                .id(id)
                 .userId(userId)
                 .title(title).createDate(createDate).weather(weather).season(season).shootDate(shootDate)
                 .content(content).spot(spot).hit(hit).heartCount(heartCount).longitude(longitude).latitude(latitude)

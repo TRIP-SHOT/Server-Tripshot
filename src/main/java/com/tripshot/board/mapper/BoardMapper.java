@@ -14,16 +14,6 @@ public interface BoardMapper {
 	List<Board> search(String season, String startDate, String endDate, String keyword);
 	Board selectOne(Long id);
 	int insertBoard(Board board);
-//	Board selectOne(String num);
-//
-//	void countUp(String num);
-//
-//	void insert(Board b);
-//
-//	void modifyContent(String content, String num);
-//
-//	void modify(Board b);
-//
-//	void delete(String num);
-
+	int updateBoard(Board board);
+	String selectImageKey(int id);
 }

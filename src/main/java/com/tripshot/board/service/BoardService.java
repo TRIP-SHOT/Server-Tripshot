@@ -11,6 +11,7 @@ public interface BoardService {
 	List<Board> search(String season, String startDate, String endDate, String keyword);
 	Board selectOne(Long id);
 	int insertBoard(Board board);
+	int updateBoard(Board board);
 
 //	Board selectOne(String num);
 //
