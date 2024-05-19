@@ -1,5 +1,6 @@
 package com.tripshot.board.controller;
 
+import com.tripshot.board.dto.BoardResponseDto;
 import com.tripshot.board.dto.WriteBoardRequestDto;
 import com.tripshot.board.dto.WriteBoardResponseDto;
 import com.tripshot.global.util.s3.S3Uploader;
@@ -46,13 +47,13 @@ public class BoardController {
      * @return 게시글 목록
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Board>>> list(
+    public ResponseEntity<ApiResponse<List<BoardResponseDto>>> list(
             @RequestParam(value = "season", required = false) String season,
-            @RequestParam(value = "startdate", required = false)  String startDate,
-            @RequestParam(value = "enddate", required = false) String endDate,
+            @RequestParam(value = "startDate", required = false)  String startDate,
+            @RequestParam(value = "endDate", required = false) String endDate,
             @RequestParam(value = "keyword", required = false) String keyword
     ) {
-        List<Board> response = null;
+        List<BoardResponseDto> response = null;
         if (season != null || startDate != null || endDate != null || keyword != null) {//검색 조건이 있는 경우
             response = service.search(season, startDate, endDate, keyword);
         } else { //검색 기준이 없는 경우
@@ -67,8 +68,8 @@ public class BoardController {
      * @return 해당하는 고유한 게시글
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<Board>> detail(@PathVariable("id") Long id){
-        Board response = service.selectOne(id);
+    public ResponseEntity<ApiResponse<BoardResponseDto>> detail(@PathVariable("id") Long id){
+        BoardResponseDto response = service.selectOne(id);
         return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 상세조회 조회 성공", response), HttpStatus.OK);
     }
 
@@ -98,7 +99,6 @@ public class BoardController {
      */
     @PutMapping
     public ResponseEntity<ApiResponse<?>> updateBoard(@ModelAttribute WriteBoardRequestDto request) throws IOException {
-
         Board board = request.toBoard();
         String[] keyAndUrl = s3Uploader.upload(request.getImage(), DIR);
         board.setImageKey(keyAndUrl[0]);

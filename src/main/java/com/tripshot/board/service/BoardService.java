@@ -1,5 +1,6 @@
 package com.tripshot.board.service;
 
+import com.tripshot.board.dto.BoardResponseDto;
 import java.util.List;
 
 import com.tripshot.board.dto.Board;
@@ -7,9 +8,9 @@ import com.tripshot.board.dto.Board;
 
 public interface BoardService {
 
-	List<Board> selectAll();
-	List<Board> search(String season, String startDate, String endDate, String keyword);
-	Board selectOne(Long id);
+	List<BoardResponseDto> selectAll();
+	List<BoardResponseDto> search(String season, String startDate, String endDate, String keyword);
+	BoardResponseDto selectOne(Long id);
 	int insertBoard(Board board);
 	int updateBoard(Board board);
 	int deleteBoard(Long id);

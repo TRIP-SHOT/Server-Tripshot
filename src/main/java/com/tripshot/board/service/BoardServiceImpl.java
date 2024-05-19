@@ -1,5 +1,6 @@
 package com.tripshot.board.service;
 
+import com.tripshot.board.dto.BoardResponseDto;
 import com.tripshot.global.util.s3.S3Uploader;
 import java.util.List;
 
@@ -21,17 +22,17 @@ public class BoardServiceImpl implements BoardService {
 	private final String DIR = "/album";
 	private final S3Uploader s3Uploader;
 	@Override
-	public List<Board> selectAll() {
+	public List<BoardResponseDto> selectAll() {
 		return mapper.selectAll();
 	}
 
 	@Override
-	public List<Board> search(String season, String startDate, String endDate, String keyword){
+	public List<BoardResponseDto> search(String season, String startDate, String endDate, String keyword){
 		return mapper.search(season,startDate,endDate,keyword);
 	}
 
 	@Override
-	public Board selectOne(Long id) {
+	public BoardResponseDto selectOne(Long id) {
 		return mapper.selectOne(id);
 	}
 

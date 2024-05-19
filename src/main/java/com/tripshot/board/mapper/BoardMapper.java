@@ -1,5 +1,6 @@
 package com.tripshot.board.mapper;
 
+import com.tripshot.board.dto.BoardResponseDto;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -10,9 +11,9 @@ import com.tripshot.board.dto.Board;
 @Mapper
 public interface BoardMapper {
 
-	List<Board> selectAll();
-	List<Board> search(String season, String startDate, String endDate, String keyword);
-	Board selectOne(Long id);
+	List<BoardResponseDto> selectAll();
+	List<BoardResponseDto> search(String season, String startDate, String endDate, String keyword);
+	BoardResponseDto selectOne(Long id);
 	int insertBoard(Board board);
 	int updateBoard(Board board);
 	String selectImageKey(Long id);
