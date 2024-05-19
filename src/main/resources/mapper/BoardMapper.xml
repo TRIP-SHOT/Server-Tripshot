@@ -17,14 +17,15 @@
 			title = #{title},
 			weather = #{weather},
 			season = #{season},
-			shoot_date = #{shootDate},
+			shot_date = #{shotDate},
 			image = #{image},
 			content = #{content},
 			spot = #{spot},
 			hit = #{hit},
 			heart_count = #{heartCount},
 			coordinate = ST_GeomFromText('POINT(${longitude} ${latitude})'),
-			image_key = #{imageKey}
+			image_key = #{imageKey},
+			location_name = #{locationName}
 		WHERE
 			id = #{id}
 	</update>
@@ -44,109 +45,121 @@
 			create_date,
 			weather,
 			season,
-			shoot_date,
+			shot_date,
 			image,
 			content,
 			spot,
 			hit,
 			heart_count,
 			coordinate,
-			image_key
+			image_key,
+			location_name
 		) VALUES (
 					 #{userId},
 					 #{title},
 					 now(),
 					 #{weather},
 					 #{season},
-					 #{shootDate},
+					 #{shotDate},
 					 #{image},
 					 #{content},
 					 #{spot},
 					 #{hit},
 					 #{heartCount},
 					 ST_GeomFromText('POINT(${longitude} ${latitude})'),
-		          	#{imageKey}
+		          	#{imageKey},
+		          	#{locationName}
 				 )
 	</insert>
 
-
 	<!-- 상세조회 -->
-	<select id="selectOne" resultType="Board">
+	<select id="selectOne" resultType="BoardResponseDto">
 		select
-			id,
-			user_id as userId,
-			title,
-			create_date as createDate,
-			weather,
-			season,
-			shoot_date as shootDate,
-			image,
-			content,
-			spot,
-			hit,
-			heart_count as heartCount,
-			ST_X(coordinate) AS longitude,
-			ST_Y(coordinate) AS latitude
-		from board
-		where id = #{id}
+			a.id as id,
+			a.user_id as userId,
+			a.title as title,
+			a.create_date as createDate,
+			a.weather as weather,
+			a.season as season,
+			a.shot_date as shotDate,
+			a.image as image,
+			a.content as content,
+			a.spot as spot,
+			a.hit as hit,
+			a.heart_count as heartCount,
+			ST_X(a.coordinate) AS longitude,
+			ST_Y(a.coordinate) AS latitude,
+			a.location_name as locationName,
+			b.nickname as nickname
+		from board a
+		join user b on a.user_id = b.id
+		where a.id = #{id}
 	</select>
 
+
 	<!-- 목록조회 -->
-	<select id="selectAll" resultType="Board">
+	<select id="selectAll" resultType="BoardResponseDto">
 		select
-			id,
-			user_id as userId,
-			title,
-			create_date as createDate,
-			weather,
-			season,
-			shoot_date as shootDate,
-			image,
-			content,
-			spot,
-			hit,
-			heart_count as heartCount,
-			ST_X(coordinate) AS longitude,
-			ST_Y(coordinate) AS latitude
-		from board
+			a.id as id,
+			a.user_id as userId,
+			a.title as title,
+			a.create_date as createDate,
+			a.weather as weather,
+			a.season as season,
+			a.shot_date as shotDate,
+			a.image as image,
+			a.content as content,
+			a.spot as spot,
+			a.hit as hit,
+			a.heart_count as heartCount,
+			a.location_name as locationName,
+			ST_X(a.coordinate) AS longitude,
+			ST_Y(a.coordinate) AS latitude,
+			b.nickname as nickname
+		from board a
+		join user b on a.user_id = b.id
 	</select>
 
 	<!-- 검색 -->
-	<select id="search" resultType="Board" >
+	<select id="search" resultType="BoardResponseDto" >
 		select
-			id,
-			user_id as userId,
-			title,
-			create_date as createDate,
-			weather,
-			season,
-			shoot_date as shootDate,
-			image,
-			content,
-			spot,
-			hit,
-			heart_count as heartCount,
-			ST_X(coordinate) AS longitude,
-			ST_Y(coordinate) AS latitude
-		from board
+			a.id as id,
+			a.user_id as userId,
+			a.title as title,
+			a.create_date as createDate,
+			a.weather as weather,
+			a.season as season,
+			a.shot_date as shotDate,
+			a.image as image,
+			a.content as content,
+			a.spot as spot,
+			a.hit as hit,
+			a.heart_count as heartCount,
+			a.location_name as locationName,
+			ST_X(a.coordinate) AS longitude,
+			ST_Y(a.coordinate) AS latitude,
+			b.nickname as nickname
+		from board a
+		join user b on a.user_id = b.id
 		<where>
 			<!-- season이 null이 아니면 season과 season 컬럼의 동일여부를 비교 -->
 			<if test="season != null">
-				AND season = #{season}
+				AND a.season = #{season}
 			</if>
 			<!-- startDate가 null이 아니면 startDate보다 늦거나 같은 shoot_date 컬럼을 찾음 -->
 			<if test="startDate != null">
-				AND shoot_date &gt;= #{startDate}
+				AND a.shot_date &gt;= #{startDate}
 			</if>
 			<!-- endDate가 null이 아니면 endDate보다 빠르거나 같은 shoot_date 컬럼을 찾음 -->
 			<if test="endDate != null">
-				AND shoot_date &lt;= #{endDate}
+				AND a.shot_date &lt;= #{endDate}
 			</if>
 			<if test="keyword != null">
 				AND  (
-		    		title like concat('%',#{keyword},'%')
-					OR content like concat('%',#{keyword},'%')
-					OR spot like concat('%',#{keyword},'%')
+		    		a.title like concat('%',#{keyword},'%')
+					OR a.content like concat('%',#{keyword},'%')
+					OR a.spot like concat('%',#{keyword},'%')
+				    OR a.locationName like concat('%',#{keyword},'%')
 					)
 			</if>
 		</where>
