@@ -34,10 +34,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {
-
 		// 클라이언트 요청에서 username, password 추출
 		String userId = obtainUsername(request);
 		String password = obtainPassword(request);
+
 		log.info("userId={}",userId);
 		// 스프링 시큐리티에서 username과 password를 검증하기 위해서는 token에 담아야 함
 		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userId, password, null);

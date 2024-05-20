@@ -27,7 +27,7 @@
 			email,
 			profile_image as profileImage,
 			role
-			FROM USER
+			FROM user
 			WHERE user_id=#{userId}
 	</select>
 </mapper>

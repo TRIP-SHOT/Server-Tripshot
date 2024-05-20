@@ -2,6 +2,7 @@ package com.tripshot.global.security.filter;
 
 import java.io.IOException;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,6 +16,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+@Slf4j
 public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
 
@@ -28,9 +30,10 @@ public class JWTFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		//request에서 Authorization 헤더를 찾음
         String authorization= request.getHeader("Authorization");
-				
+
 		//Authorization 헤더 검증
         if (authorization == null || !authorization.startsWith("Bearer ")) {
+            log.debug("*****{}이 없어서 다음 filter로 넘김",authorization);
             filterChain.doFilter(request, response);
             //조건이 해당되면 메소드 종료 (필수)
             return;
@@ -42,6 +45,7 @@ public class JWTFilter extends OncePerRequestFilter {
 		//토큰 소멸 시간 검증
         if (jwtUtil.isExpired(token)) {
             //!토큰 시간 만료
+            log.debug("****{}토큰이 만료되어 다음 필터로 넘김",authorization);
             filterChain.doFilter(request, response);
 			//조건이 해당되면 메소드 종료 (필수)
             return;
