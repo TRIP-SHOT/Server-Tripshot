@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "com.tripshot.user.mapper.UserMapper">
+	<select id="existByUserId" parameterType="String">
+		select
+			count(*)
+			from user
+			where user_id=#{userId}
+		
+	</select>
+	
+	<insert id="insertUser">
+		INSERT INTO user(user_id, password, name,nickname,email)
+		VALUES (#{userId}, #{password}, #{name}, #{nickname}, #{email})
+	</insert>
+	
+	<select id="findByUserId" resultType="User">
+		SELECT
+			id,
+			user_id as userId,
+			password,
+			name,
+			nickname,
+			email,
+			profile_image as profileImage,
+			role
+			FROM USER
+			WHERE user_id=#{userId}
+	</select>
+</mapper>
