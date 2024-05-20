@@ -18,4 +18,5 @@ public interface BoardMapper {
 	int updateBoard(Board board);
 	String selectImageKey(Long id);
 	int deleteBoard(Long id);
+	int hitCountUp(Long id);
 }
