@@ -33,6 +33,7 @@ public class BoardServiceImpl implements BoardService {
 
 	@Override
 	public BoardResponseDto selectOne(Long id) {
+		mapper.hitCountUp(id);
 		return mapper.selectOne(id);
 	}
 
