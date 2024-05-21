@@ -28,7 +28,6 @@
 			content = #{content},
 			spot = #{spot},
 			hit = #{hit},
-			heart_count = #{heartCount},
 			coordinate = ST_GeomFromText('POINT(${longitude} ${latitude})'),
 			image_key = #{imageKey},
 			location_name = #{locationName}
@@ -56,7 +55,6 @@
 			content,
 			spot,
 			hit,
-			heart_count,
 			coordinate,
 			image_key,
 			location_name
@@ -71,7 +69,6 @@
 					 #{content},
 					 #{spot},
 					 #{hit},
-					 #{heartCount},
 					 ST_GeomFromText('POINT(${longitude} ${latitude})'),
 		          	#{imageKey},
 		          	#{locationName}
@@ -92,7 +89,6 @@
 			a.content as content,
 			a.spot as spot,
 			a.hit as hit,
-			a.heart_count as heartCount,
 			ST_X(a.coordinate) AS longitude,
 			ST_Y(a.coordinate) AS latitude,
 			a.location_name as locationName,
@@ -117,7 +113,6 @@
 			a.content as content,
 			a.spot as spot,
 			a.hit as hit,
-			a.heart_count as heartCount,
 			a.location_name as locationName,
 			ST_X(a.coordinate) AS longitude,
 			ST_Y(a.coordinate) AS latitude,
@@ -140,7 +135,6 @@
 			a.content as content,
 			a.spot as spot,
 			a.hit as hit,
-			a.heart_count as heartCount,
 			a.location_name as locationName,
 			ST_X(a.coordinate) AS longitude,
 			ST_Y(a.coordinate) AS latitude,

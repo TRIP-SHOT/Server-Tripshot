@@ -19,4 +19,8 @@ public interface BoardMapper {
 	String selectImageKey(Long id);
 	int deleteBoard(Long id);
 	int hitCountUp(Long id);
+	//isLike여부
+	int checkUserHeartBoard(Long userId, Long boardId);
+	//좋아요 개수
+	Long countHeartCount(Long BoardId);
 }

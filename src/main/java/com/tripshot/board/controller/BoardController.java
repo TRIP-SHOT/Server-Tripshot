@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,6 +54,10 @@ public class BoardController {
             @RequestParam(value = "endDate", required = false) String endDate,
             @RequestParam(value = "keyword", required = false) String keyword
     ) {
+    	
+//    	String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+//    	System.out.println("userId in Controller="+userId);
+    	
         List<BoardResponseDto> response = null;
         if (season != null || startDate != null || endDate != null || keyword != null) {//검색 조건이 있는 경우
             response = service.search(season, startDate, endDate, keyword);

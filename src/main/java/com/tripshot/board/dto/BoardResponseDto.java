@@ -24,11 +24,12 @@ public class BoardResponseDto {
     private String image;//사진
     private String content;//내용
     private String spot;//장소
-    private int hit;//조회수
-    private int heartCount;//좋아요수
+    private Long hit;//조회수
+    private Long heartCount;//좋아요수
     private String locationName;//장소명
     private double longitude;//경도
     private double latitude;//위도
+    private Boolean isLike;
 
 
 

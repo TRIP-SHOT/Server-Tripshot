@@ -28,7 +28,16 @@ public class BoardServiceImpl implements BoardService {
 
 	@Override
 	public List<BoardResponseDto> search(String season, String startDate, String endDate, String keyword){
-		return mapper.search(season,startDate,endDate,keyword);
+		List<BoardResponseDto> boards = mapper.search(season, startDate, endDate, keyword);
+		//isLike와 heartCount를 넣어줘야함.
+		for(BoardResponseDto board: boards) {
+			//isLike여부
+//			if(checkUserHeartBoard(board.getId()) > 0) {
+//				
+//			}
+			//heartCount여부
+		}
+		return boards;
 	}
 
 	@Override
