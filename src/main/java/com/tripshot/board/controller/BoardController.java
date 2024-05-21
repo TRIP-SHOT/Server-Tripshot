@@ -4,15 +4,20 @@ import com.tripshot.board.dto.BoardResponseDto;
 import com.tripshot.board.dto.WriteBoardRequestDto;
 import com.tripshot.board.dto.WriteBoardResponseDto;
 import com.tripshot.global.util.s3.S3Uploader;
+import com.tripshot.user.model.CustomUserDetails;
+import com.tripshot.user.service.UserService;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,9 +38,11 @@ import com.tripshot.global.ApiResponse;
 @RequestMapping("/boards")
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class BoardController {
 
     private final BoardService service;
+    private final UserService userService;
     private final S3Uploader s3Uploader;
     private final String DIR = "album";
     /**
@@ -53,11 +60,29 @@ public class BoardController {
             @RequestParam(value = "endDate", required = false) String endDate,
             @RequestParam(value = "keyword", required = false) String keyword
     ) {
+        //TODO 이거...분리해야함...
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        // SecurityContextHolder에서 Authentication 객체를 가져옵니다.
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // Authentication 객체에서 Principal을 가져옵니다.
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        log.info("userDetails={}", authentication.getPrincipal());
+        log.info("userIdIDIDIDIDId={}", userDetails.getId());
+        log.info("userId={}",userDetails.getId());
+
+        Long userId = 0L;
+        if(username.equals("anonymousUser")) {
+            userId = userService.findUserIdByUsername(username);
+        }
+        log.info("username={}",username);
+//        log.info("userId={}",userId);
+
         List<BoardResponseDto> response = null;
         if (season != null || startDate != null || endDate != null || keyword != null) {//검색 조건이 있는 경우
-            response = service.search(season, startDate, endDate, keyword);
+            response = service.search(season, startDate, endDate, keyword, username);
         } else { //검색 기준이 없는 경우
-            response = service.selectAll();
+            response = service.selectAll(username);
         }
         return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 목록 조회 성공", response), HttpStatus.OK);
     }
@@ -69,7 +94,7 @@ public class BoardController {
      */
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<BoardResponseDto>> detail(@PathVariable("id") Long id){
-        BoardResponseDto response = service.selectOne(id);
+        BoardResponseDto response = service.selectOne(id,null);
         return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 상세조회 조회 성공", response), HttpStatus.OK);
     }
 

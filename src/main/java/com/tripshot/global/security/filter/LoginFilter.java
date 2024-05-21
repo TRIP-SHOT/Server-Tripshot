@@ -78,9 +78,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 			Authentication authentication) {
 		// UserDetailsS
 		CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-
+		log.info("로그인이 성공한순간에 user는...?{}",customUserDetails.getUser());
 		// userId
 		String userId = customUserDetails.getUsername();
+		//TODO 보안상 문제가 있을 듯 나중에 리팩토링!!
+		Long id = customUserDetails.getUser().getId();
+		log.info("id 로그인할때 있나요...?===={}",id);
 
 		// 권한 가져오기
 		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
@@ -89,7 +92,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 		String role = auth.getAuthority();
 
 		// 토큰 생성
-		String token = jwtUtil.createJwt(userId, role, TOKEN_EXPIRED);
+		String token = jwtUtil.createJwt(userId, role, id, TOKEN_EXPIRED);
 		response.addHeader("Authorization", "Bearer " + token);
 
 	}

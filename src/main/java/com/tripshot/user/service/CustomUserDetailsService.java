@@ -16,18 +16,27 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class CustomUserDetailsService implements UserDetailsService {
-	private final UserMapper mapper;
-	
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		//유저에 대한 정보를 조회한 뒤 반환한다.
-		User user = mapper.findByUserId(username);
-		log.info("user={}",user);
-		if(user != null) {
-			return new CustomUserDetails(user);
-		}
-		
-		return null;
-	}
+    private final UserMapper mapper;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        // 유저에 대한 정보를 조회한 뒤 반환한다.
+        User user = mapper.findByUserId(username);
+        if (user == null) {
+            log.warn("User not found: {}", username);
+            throw new UsernameNotFoundException("User not found with username: " + username);
+        }
+        log.info("****************************User retrieved: {}", user);
+        return new CustomUserDetails(user);
+
+//		User user = mapper.findByUserId(username);
+//		log.info("user={}",user);
+//		if(user != null) {
+//			return new CustomUserDetails(user);
+//		}
+//
+//		return null;
+    }
 
 }
