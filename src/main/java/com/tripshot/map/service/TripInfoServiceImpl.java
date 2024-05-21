@@ -3,12 +3,15 @@ package com.tripshot.map.service;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tripshot.map.dto.AttractionInfo;
+import com.tripshot.map.dto.Gugun;
+import com.tripshot.map.dto.Sido;
 import com.tripshot.map.mapper.TripInfoMapper;
 
 
@@ -29,12 +32,18 @@ public class TripInfoServiceImpl implements TripInfoService {
 	}
 
 	@Override
-	public ArrayList<AttractionInfo> search(String location, String category, String word) throws SQLException {
-		Map<String, String> map = new HashMap<>();
-		map.put("location", location);
-		map.put("category", category);
-		map.put("word", word);
-		return mapper.search(map);
+	public ArrayList<AttractionInfo> search(String location, String category, String word, String gugun) throws SQLException {
+		return mapper.search(location, category, word, gugun);
+	}
+
+	@Override
+	public List<Sido> selectSidoAll() {
+		return mapper.selectSidoAll();
+	}
+
+	@Override
+	public List<Gugun> selectGugunAll() {
+		return mapper.selectGugunAll();
 	}
 	
 }

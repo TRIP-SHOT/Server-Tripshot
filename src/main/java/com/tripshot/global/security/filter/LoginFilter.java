@@ -89,7 +89,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 		String role = auth.getAuthority();
 
 		// 토큰 생성
-		System.out.println(TOKEN_EXPIRED);
 		String token = jwtUtil.createJwt(userId, role, TOKEN_EXPIRED);
 		response.addHeader("Authorization", "Bearer " + token);
 

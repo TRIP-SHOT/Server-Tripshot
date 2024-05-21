@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,17 +31,10 @@ public class UserController {
 		service.join(joinDto);
 		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "회원가입 성공", "회원가입에 성공하셨습니다."), HttpStatus.OK);
 	}
-
-	@GetMapping("/")
-	public String mainP() {
-
-		String name = SecurityContextHolder.getContext().getAuthentication().getName();
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-		Iterator<? extends GrantedAuthority> iter = authorities.iterator();
-		GrantedAuthority auth = iter.next();
-		String role = auth.getAuthority();
-		return "Main Controller : " + name +" \n"+"role ="+role;
+	
+	@DeleteMapping("/logout")
+	public ResponseEntity<ApiResponse<String>> logout(){
+		
+		return new ResponseEntity(new ApiResponse(HttpStatus.OK,"로그아웃 성공","로그아웃 처리 되었습니다."),HttpStatus.OK);
 	}
 }

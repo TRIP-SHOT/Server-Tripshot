@@ -4,7 +4,19 @@
    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.tripshot.map.mapper.TripInfoMapper">
-
+	<select id="selectSidoAll" resultType="com.tripshot.map.dto.Sido">
+		select 
+			*			
+		 from sido
+	</select>
+	
+	<select id="selectGugunAll" resultType="com.tripshot.map.dto.Gugun">
+		select 
+			*			
+		 from gugun
+	</select>
+	
+	
 	<!-- 리절트 맵 정의. primary key 컬럼은 id 태그로 표시해줌 select 한후의 컬럼명과 vo안의 필드명이 일치하지 
 		않아서 둘간의 관계를 나타낼때 사용 -->
 	<resultMap id="JoinResult" type="AttractionInfo">
@@ -27,25 +39,28 @@
 	</select>
 
 	<select id="search" parameterType="java.util.Map"
-		resultType="AttractionInfo">
-		select first_image,title,addr1 from attraction_info
+		resultType="com.tripshot.map.dto.AttractionInfoDto">
+		select 
+			content_id,
+			title,
+			addr1,
+			first_image,
+			latitude,
+			longitude
+		from attraction_info
 		<where>
 			<if test="location != 'null'">
-				sido_code = #{location}
-				<if test="category != 'null' or word != 'null'">
-					AND
-				</if>
+				AND sido_code = #{location}
 			</if>
 			<if test="category != 'null'">
-				content_type_id = #{category}
-				<if test="word != 'null'">
-					AND
-				</if>
+				AND content_type_id = #{category}
 			</if>
 			<if test="word != 'null'">
-				title like CONCAT('%', #{word},'%')
+				AND title like CONCAT('%', #{word},'%')
 			</if>
-
+			<if test="gugun != 'null'">
+				AND title like CONCAT('%', #{gugun},'%')
+			</if>
 		</where>
 
 	</select>

@@ -78,11 +78,15 @@ public class SecurityConfig {
 
 		// 경로별 인가 작업
 		http.authorizeHttpRequests((auth) -> auth
-				.requestMatchers(HttpMethod.POST,"/login").permitAll()
-				.requestMatchers(HttpMethod.POST,"/join").permitAll()
-				.requestMatchers("/swagger-ui/index.html#").permitAll()
-				.requestMatchers(HttpMethod.GET,"/boards/**").permitAll()
-				.anyRequest().authenticated());
+				.anyRequest().permitAll());
+
+				//TODO
+//				.requestMatchers(HttpMethod.POST,"/login").permitAll()
+//				.requestMatchers(HttpMethod.POST,"/join").permitAll()
+//				.requestMatchers("/swagger-ui/index.html#").permitAll()
+//				.requestMatchers(HttpMethod.GET,"/boards/**").permitAll()
+//				.anyRequest().authenticated());
+				//TODO
 //				.requestMatchers("/boards").hasRole("USER").anyRequest().authenticated());
         http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
 		
