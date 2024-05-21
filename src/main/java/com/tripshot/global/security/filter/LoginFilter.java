@@ -1,19 +1,26 @@
 package com.tripshot.global.security.filter;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.util.StreamUtils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tripshot.global.util.JWTUtil;
 import com.tripshot.user.model.CustomUserDetails;
+import com.tripshot.user.model.LoginDto;
 
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +32,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
 	// JWTUtil 주입
 	private final JWTUtil jwtUtil;
-
+	
+	private Long TOKEN_EXPIRED = 86400000L;
+    
 	public LoginFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
 		this.authenticationManager = authenticationManager;
 		this.jwtUtil = jwtUtil;
@@ -34,9 +43,25 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {
+
+		LoginDto loginDto = new LoginDto();
+		try {
+		    ObjectMapper objectMapper = new ObjectMapper();
+		    ServletInputStream inputStream = request.getInputStream();
+		    String messageBody = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+		    loginDto = objectMapper.readValue(messageBody, LoginDto.class);
+
+		} catch (IOException e) {
+		    throw new RuntimeException(e);
+		}
+
+		String userId = loginDto.getUserId();
+		String password = loginDto.getPassword();
+		
+		
 		// 클라이언트 요청에서 username, password 추출
-		String userId = obtainUsername(request);
-		String password = obtainPassword(request);
+//		String userId = obtainUsername(request);
+//		String password = obtainPassword(request);
 
 		log.info("userId={}",userId);
 		// 스프링 시큐리티에서 username과 password를 검증하기 위해서는 token에 담아야 함
@@ -64,7 +89,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 		String role = auth.getAuthority();
 
 		// 토큰 생성
-		String token = jwtUtil.createJwt(userId, role, 60 * 60 * 60L);
+		System.out.println(TOKEN_EXPIRED);
+		String token = jwtUtil.createJwt(userId, role, TOKEN_EXPIRED);
 		response.addHeader("Authorization", "Bearer " + token);
 
 	}

@@ -41,8 +41,6 @@ public class UserController {
 		Iterator<? extends GrantedAuthority> iter = authorities.iterator();
 		GrantedAuthority auth = iter.next();
 		String role = auth.getAuthority();
-		
-		
 		return "Main Controller : " + name +" \n"+"role ="+role;
 	}
 }
