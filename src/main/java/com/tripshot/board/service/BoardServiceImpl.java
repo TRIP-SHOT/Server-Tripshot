@@ -22,8 +22,14 @@ public class BoardServiceImpl implements BoardService {
 	private final String DIR = "/album";
 	private final S3Uploader s3Uploader;
 	@Override
-	public List<BoardResponseDto> selectAll() {
-		return mapper.selectAll();
+	public List<BoardResponseDto> selectAll(String userLoginId) {
+		List<BoardResponseDto> boards = mapper.selectAll(userLoginId);
+		//heart_count 로직 추가
+		//Is_Like 로직 추가
+		for(BoardResponseDto board: boards){
+
+		}
+		return mapper.selectAll(userLoginId);
 	}
 
 	@Override
@@ -38,10 +44,11 @@ public class BoardServiceImpl implements BoardService {
 			//heartCount여부
 		}
 		return boards;
+
 	}
 
 	@Override
-	public BoardResponseDto selectOne(Long id) {
+	public BoardResponseDto selectOne(Long id, String userLoginId) {
 		mapper.hitCountUp(id);
 		return mapper.selectOne(id);
 	}
@@ -65,4 +72,5 @@ public class BoardServiceImpl implements BoardService {
 		s3Uploader.deleteFile(imageKey);
 		return mapper.deleteBoard(id);
 	}
+
 }

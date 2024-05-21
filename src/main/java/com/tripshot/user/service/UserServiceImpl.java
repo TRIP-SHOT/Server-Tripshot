@@ -34,4 +34,9 @@ public class UserServiceImpl implements UserService {
 		return true;
 	}
 
+	@Override
+	public Long findUserIdByUsername(String username) {
+		return null;
+	}
+
 }

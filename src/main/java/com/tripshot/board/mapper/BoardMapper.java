@@ -11,7 +11,7 @@ import com.tripshot.board.dto.Board;
 @Mapper
 public interface BoardMapper {
 
-	List<BoardResponseDto> selectAll();
+	List<BoardResponseDto> selectAll(String userLoginId);
 	List<BoardResponseDto> search(String season, String startDate, String endDate, String keyword);
 	BoardResponseDto selectOne(Long id);
 	int insertBoard(Board board);
@@ -23,4 +23,5 @@ public interface BoardMapper {
 	int checkUserHeartBoard(Long userId, Long boardId);
 	//좋아요 개수
 	Long countHeartCount(Long BoardId);
+
 }

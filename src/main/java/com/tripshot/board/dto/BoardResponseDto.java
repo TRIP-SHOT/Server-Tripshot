@@ -29,8 +29,6 @@ public class BoardResponseDto {
     private String locationName;//장소명
     private double longitude;//경도
     private double latitude;//위도
-    private Boolean isLike;
-
-
+    private Boolean isLike;//좋아요 여부
 
 }
