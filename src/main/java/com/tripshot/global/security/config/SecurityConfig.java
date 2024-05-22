@@ -28,6 +28,7 @@ public class SecurityConfig {
 
 	// JWTUtil 주입
 	private final JWTUtil jwtUtil;
+
 	public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
 		
 		this.authenticationConfiguration = authenticationConfiguration;
@@ -80,6 +81,7 @@ public class SecurityConfig {
 		http.authorizeHttpRequests((auth) -> auth
 //				.anyRequest().permitAll());
 				//TODO
+				.requestMatchers("/map/**").permitAll()
 				.requestMatchers(HttpMethod.POST,"/login").permitAll()
 				.requestMatchers(HttpMethod.POST,"/join").permitAll()
 				.requestMatchers("/swagger-ui/index.html#").permitAll()

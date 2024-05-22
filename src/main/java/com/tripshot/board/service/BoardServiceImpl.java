@@ -85,4 +85,17 @@ public class BoardServiceImpl implements BoardService {
 		return mapper.deleteBoard(id);
 	}
 
+	@Override
+	public int update(Long userId, Long boardId) {
+		//TODO 존재하는 경우
+		int id = mapper.checkUserHeartBoard(userId, boardId);
+		if(id > 0) {
+			//좋아요 취소 => 해당 컬럼 삭제
+			return mapper.deleteHeart(id);
+		}
+		//좋아요 추가 => 해당 컬럼 추가
+		return mapper.insertHeart(id);
+		//return
+	}
+
 }

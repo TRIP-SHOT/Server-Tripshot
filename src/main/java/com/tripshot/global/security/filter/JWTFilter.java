@@ -35,6 +35,7 @@ public class JWTFilter extends OncePerRequestFilter {
         if (authorization == null || !authorization.startsWith("Bearer ")) {
             log.debug("*****{}이 없어서 다음 filter로 넘김",authorization);
             filterChain.doFilter(request, response);
+            
             //조건이 해당되면 메소드 종료 (필수)
             return;
         }
@@ -51,7 +52,7 @@ public class JWTFilter extends OncePerRequestFilter {
             String username = jwtUtil.getUsername(token);
             String role = jwtUtil.getRole(token);
             Long id = jwtUtil.getId(token);
-            log.info("id={}", id);
+            log.info("username={}, role={}, id={}", username, role, id);
 
             User user = new User();
             user.setUserId(username);
@@ -63,6 +64,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
             Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authToken);
+
         } catch (Exception e) {
             log.debug("토큰 처리 중 오류 발생: {}", e.getMessage());
             filterChain.doFilter(request, response);

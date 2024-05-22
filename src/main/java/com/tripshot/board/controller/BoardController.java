@@ -64,7 +64,7 @@ public class BoardController {
 
 		// SecurityContextHolder에서 Authentication 객체를 가져옵니다.
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		
+
 		Long userPk = 0L;
 		if (authentication != null && authentication.isAuthenticated()
 				&& !(authentication instanceof AnonymousAuthenticationToken)) {
@@ -74,9 +74,9 @@ public class BoardController {
 			// 예: userDetails.getUsername(), userDetails.getAuthorities() 등
 			userPk = userDetails.getUser().getId();
 		}
-		
+
 		List<BoardResponseDto> response = null;
-		
+
 		if (season != null || startDate != null || endDate != null || keyword != null) {// 검색 조건이 있는 경우
 			System.out.println("조건있다.");
 			response = service.search(season, startDate, endDate, keyword);
@@ -84,7 +84,7 @@ public class BoardController {
 			System.out.println("조건없다.");
 
 			response = service.selectAll(userPk);
-			log.info("response={}",response);
+			log.info("response={}", response);
 		}
 		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 목록 조회 성공", response), HttpStatus.OK);
 	}
@@ -135,7 +135,7 @@ public class BoardController {
 		board.setImage(keyAndUrl[1]);
 		service.updateBoard(board);
 		// service - 게시글 id를 통해서 해당 내용을 모두 엎어쓰기한다.
-		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 수정 성공", null), HttpStatus.OK);
+		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 수정 성공", "게시글 수정을 성공했습니다."), HttpStatus.OK);
 	}
 
 	/**
@@ -147,6 +147,22 @@ public class BoardController {
 	@DeleteMapping
 	public ResponseEntity<ApiResponse<?>> deleteBoard(@RequestParam("id") Long id) {
 		service.deleteBoard(id);
-		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 삭제 성공", null), HttpStatus.OK);
+		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 삭제 성공", "게시글 삭제 성공하였습니다."), HttpStatus.OK);
 	}
+
+	@PostMapping("/heart")
+	public ResponseEntity<ApiResponse<?>> addHeart(@RequestParam("id") Long boardId){
+		//사용자의 고유id와 boardId를 찾는다.
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Long userPk = 0L;
+		if (authentication != null && authentication.isAuthenticated()
+				&& !(authentication instanceof AnonymousAuthenticationToken)) {
+			CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+			userPk = userDetails.getUser().getId();
+		}
+		
+		int result = service.update(userPk,boardId);
+		return new ResponseEntity(new ApiResponse (HttpStatus.OK, "좋아요 요청 성공!", "좋아요 요청 성공!"), HttpStatus.OK);
+	}
+
 }
