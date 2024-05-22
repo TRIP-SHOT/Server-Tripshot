@@ -4,6 +4,36 @@
    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace = "com.tripshot.board.mapper.BoardMapper">
+	<select id="selectHearts" resultType="BoardResponseDto">
+		select
+			b.id as id,
+			b.user_id as userId,
+			b.title as title,
+			b.create_date as createDate,
+			b.weather as weather,
+			b.season as season,
+			b.shot_date as shotDate,
+			b.image as image,
+			b.content as content,
+			b.spot as spot,
+			b.hit as hit,
+			b.location_name as locationName,
+			ST_X(b.coordinate) AS longitude,
+			ST_Y(b.coordinate) AS latitude,
+			c.nickname as nickname
+		from heart a
+				 join board b on a.board_id = b.id
+				 join user c on b.user_id = c.id
+		where a.user_id = #{userId}
+	</select>
+	<select id="findHeartId">
+		select
+		    id
+		from heart
+		where user_id=#{userId}
+		And board_id=#{boardId}
+	</select>
+
 	<insert id="insertHeart">
 		insert into heart(user_id,board_id) values(#{userId}, #{boardId})
 	</insert>
@@ -14,7 +44,7 @@
 	<!-- 사용자가 좋아요를 눌렀는지 여부 -->
 	<select id="checkUserHeartBoard">
 		select 
-			id
+			count(*)
 			from heart
 			where board_id = #{boardId}
 			and user_id = #{userPk}
@@ -97,7 +127,7 @@
 					 #{image},
 					 #{content},
 					 #{spot},
-					 #{hit},
+					 0,
 					 ST_GeomFromText('POINT(${longitude} ${latitude})'),
 		          	#{imageKey},
 		          	#{locationName}

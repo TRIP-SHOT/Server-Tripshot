@@ -50,9 +50,7 @@ public class BoardServiceImpl implements BoardService {
 		//isLike와 heartCount를 넣어줘야함.
 		for(BoardResponseDto board: boards) {
 			//isLike여부
-//			if(checkUserHeartBoard(board.getId()) > 0) {
-//				
-//			}
+
 			//heartCount여부
 		}
 		return boards;
@@ -88,14 +86,25 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public int update(Long userId, Long boardId) {
 		//TODO 존재하는 경우
-		int id = mapper.checkUserHeartBoard(userId, boardId);
-		if(id > 0) {
+		int isExist = mapper.checkUserHeartBoard(userId, boardId);
+		if(isExist > 0) {
+			Long id = mapper.findHeartId(userId,boardId);
 			//좋아요 취소 => 해당 컬럼 삭제
 			return mapper.deleteHeart(id);
 		}
 		//좋아요 추가 => 해당 컬럼 추가
-		return mapper.insertHeart(id);
+		return mapper.insertHeart(userId,boardId);
 		//return
+	}
+
+	@Override
+	public List<BoardResponseDto> selectHearts(Long userId) {
+		//heart테이블을 순회하면서 나온 id를 board테이블에서 가져옴
+		List<BoardResponseDto> hearts = mapper.selectHearts(userId);
+		for(BoardResponseDto heart : hearts){
+			heart.setIsLike(true);
+		}
+		return hearts;
 	}
 
 }

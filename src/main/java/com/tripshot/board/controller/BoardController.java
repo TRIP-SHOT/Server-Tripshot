@@ -102,6 +102,29 @@ public class BoardController {
 	}
 
 	/**
+	 *
+	 * @return
+	 */
+	@GetMapping("/hearts")
+	public ResponseEntity<ApiResponse<List<BoardResponseDto>>> hearts(){
+		// SecurityContextHolder에서 Authentication 객체를 가져옵니다.
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		Long userPk = 0L;
+		if (authentication != null && authentication.isAuthenticated()
+				&& !(authentication instanceof AnonymousAuthenticationToken)) {
+			// Authentication 객체에서 Principal을 가져옵니다.
+			CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+			// 인증된 사용자 정보를 활용하는 로직 추가
+			// 예: userDetails.getUsername(), userDetails.getAuthorities() 등
+			userPk = userDetails.getUser().getId();
+		}
+
+		List<BoardResponseDto> response = service.selectHearts(userPk);
+		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 목록 조회 성공", response), HttpStatus.OK);
+	}
+
+	/**
 	 * 게시글 작성
 	 * 
 	 * @param request 게시글 작성에 필요한 값들
@@ -110,10 +133,25 @@ public class BoardController {
 	@PostMapping
 	public ResponseEntity<ApiResponse<?>> writeBoard(@ModelAttribute WriteBoardRequestDto request) throws IOException {
 		// request의 image는 multipartFile, 이를 s3에 업로드하여 url을 생성한뒤 게시글등록 과정에 사용함.
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+		Long userPk = 0L;
+		if (authentication != null && authentication.isAuthenticated()
+				&& !(authentication instanceof AnonymousAuthenticationToken)) {
+			// Authentication 객체에서 Principal을 가져옵니다.
+			CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+			// 인증된 사용자 정보를 활용하는 로직 추가
+			// 예: userDetails.getUsername(), userDetails.getAuthorities() 등
+			userPk = userDetails.getUser().getId();
+		}
+
 		Board board = request.toBoard();
 		String[] keyAndUrl = s3Uploader.upload(request.getImage(), DIR);
 		board.setImageKey(keyAndUrl[0]);
 		board.setImage(keyAndUrl[1]);
+		board.setUserId(userPk);
+		log.info("board={}",board);
+
 
 		service.insertBoard(board);
 		WriteBoardResponseDto response = new WriteBoardResponseDto(board.getId());

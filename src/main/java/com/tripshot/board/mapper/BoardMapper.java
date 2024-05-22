@@ -23,7 +23,8 @@ public interface BoardMapper {
 	int checkUserHeartBoard(Long userPk, Long boardId);
 	//좋아요 개수
 	Long countHeartCount(Long BoardId);
-	int deleteHeart(int id);
-	int insertHeart(int id);
-
+	int deleteHeart(Long id);
+	int insertHeart(Long userId, Long boardId);
+	Long findHeartId(Long userId, Long boardId);
+	List<BoardResponseDto> selectHearts(Long userId);
 }

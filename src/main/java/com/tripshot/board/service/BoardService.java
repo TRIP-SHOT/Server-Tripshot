@@ -15,5 +15,5 @@ public interface BoardService {
 	int updateBoard(Board board);
 	int deleteBoard(Long id);
 	int update(Long userId, Long boardId);
-
+	List<BoardResponseDto> selectHearts(Long userId);
 }
