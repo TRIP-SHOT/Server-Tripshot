@@ -11,18 +11,27 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tripshot.global.ApiResponse;
+import com.tripshot.user.model.CustomUserDetails;
 import com.tripshot.user.model.JoinDto;
+import com.tripshot.user.model.LoginDto;
+import com.tripshot.user.model.LoginResponseDTO;
+import com.tripshot.user.model.UserInfoDto;
+import com.tripshot.user.model.UserUpdateRequestDto;
 import com.tripshot.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class UserController {
 	private final UserService service;
 
@@ -32,9 +41,44 @@ public class UserController {
 		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "회원가입 성공", "회원가입에 성공하셨습니다."), HttpStatus.OK);
 	}
 	
-	@DeleteMapping("/logout")
-	public ResponseEntity<ApiResponse<String>> logout(){
+	//TODO 이거 왜안됌
+	@PostMapping("/login")
+	public ResponseEntity<ApiResponse<?>> login(@RequestBody LoginDto loginDto){
+		log.info("loginDto = {}",loginDto);
+		LoginResponseDTO response = service.findNicknameByUsename(loginDto.getUserId());
+		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "로그인 성공", response), HttpStatus.OK);
+	}
+	
+	@GetMapping("/users")
+	public ResponseEntity<ApiResponse<UserInfoDto>> userInfo(){
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+		Long userPk = userDetails.getUser().getId();
+	
+		UserInfoDto response = service.getUserInfo(userPk);
+		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "회원정보 조회성공", response), HttpStatus.OK);
+	}
+	
+	@PutMapping("/users")
+	public ResponseEntity<ApiResponse<UserInfoDto>> updateUser(@RequestBody UserUpdateRequestDto user){
+		//userid를 가져옴
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+		Long userPk = userDetails.getUser().getId();
 		
-		return new ResponseEntity(new ApiResponse(HttpStatus.OK,"로그아웃 성공","로그아웃 처리 되었습니다."),HttpStatus.OK);
+		user.setId(userPk);
+		int result = service.updateUser(user);
+		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "회원정보 수정 성공", "회원정보 수정 성공"), HttpStatus.OK);
+	} 
+	
+	@DeleteMapping("/users")
+	public ResponseEntity<ApiResponse<String>> logout(){
+		//userid를 가져옴
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+		Long userPk = userDetails.getUser().getId();
+		//TODO 회원 탈퇴
+		service.withdraw(userPk);
+		return new ResponseEntity(new ApiResponse(HttpStatus.OK,"회원 탈퇴 성공","회원 탈퇴 성공"),HttpStatus.OK);
 	}
 }

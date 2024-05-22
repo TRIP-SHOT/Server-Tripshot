@@ -20,6 +20,7 @@ import com.tripshot.user.model.CustomUserDetails;
 import com.tripshot.user.model.LoginDto;
 
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -57,16 +58,13 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
 		String userId = loginDto.getUserId();
 		String password = loginDto.getPassword();
-		
-		
+				
 		// 클라이언트 요청에서 username, password 추출
-//		String userId = obtainUsername(request);
-//		String password = obtainPassword(request);
-
 		log.info("userId={}",userId);
+	
 		// 스프링 시큐리티에서 username과 password를 검증하기 위해서는 token에 담아야 함
 		UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userId, password, null);
-
+		
 		// token에 담은 검증을 위한 AuthenticationManager로 전달
 		return authenticationManager.authenticate(authToken);
 	}
@@ -75,12 +73,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 	// 로그인 성공시 실행하는 메소드 (여기서 JWT를 발급하면 됨)
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
-			Authentication authentication) {
+			Authentication authentication) throws IOException, ServletException {
 		// UserDetailsS
 		CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-
+		log.info("로그인이 성공한순간에 user는...?{}",customUserDetails.getUser());
 		// userId
 		String userId = customUserDetails.getUsername();
+		//TODO 보안상 문제가 있을 듯 나중에 리팩토링!!
+		Long id = customUserDetails.getUser().getId();
+		log.info("id 로그인할때 있나요...?===={}",id);
 
 		// 권한 가져오기
 		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
@@ -89,9 +90,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 		String role = auth.getAuthority();
 
 		// 토큰 생성
-		String token = jwtUtil.createJwt(userId, role, TOKEN_EXPIRED);
+		String token = jwtUtil.createJwt(userId, role, id, TOKEN_EXPIRED);
+		log.info("생성된 토큰 Bearer {}", token);
 		response.addHeader("Authorization", "Bearer " + token);
-
 	}
 
 	// 로그인 실패시 실행하는 메소드

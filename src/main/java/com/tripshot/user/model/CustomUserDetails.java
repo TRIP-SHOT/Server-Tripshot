@@ -8,9 +8,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class CustomUserDetails implements UserDetails {
 	private final User user;
-
 	public CustomUserDetails(User user) {
 		this.user = user;
+	}
+
+	public User getUser() {
+		return user;
 	}
 
 	@Override

@@ -19,8 +19,7 @@ public class WriteBoardRequestDto {
     private String content;//내용
     private String spot;//장소
     private String locationName;//장소명
-    private int hit;//조회수
-    private int heartCount;//좋아요수
+    private Long hit;//조회수
     private double longitude;//경도
     private double latitude;//위도
     private MultipartFile image;//사진
@@ -30,7 +29,7 @@ public class WriteBoardRequestDto {
                 .id(id)
                 .userId(userId)
                 .title(title).createDate(createDate).weather(weather).season(season).shotDate(shotDate)
-                .content(content).spot(spot).hit(hit).heartCount(heartCount).longitude(longitude).latitude(latitude).locationName(locationName)
+                .content(content).spot(spot).hit(hit).longitude(longitude).latitude(latitude).locationName(locationName)
                 .build();
         return board;
     }

@@ -4,6 +4,65 @@
    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace = "com.tripshot.board.mapper.BoardMapper">
+	<select id="selectHearts" resultType="BoardResponseDto">
+		select
+			b.id as id,
+			b.user_id as userId,
+			b.title as title,
+			b.create_date as createDate,
+			b.weather as weather,
+			b.season as season,
+			b.shot_date as shotDate,
+			b.image as image,
+			b.content as content,
+			b.spot as spot,
+			b.hit as hit,
+			b.location_name as locationName,
+			ST_X(b.coordinate) AS longitude,
+			ST_Y(b.coordinate) AS latitude,
+			c.nickname as nickname
+		from heart a
+				 join board b on a.board_id = b.id
+				 join user c on b.user_id = c.id
+		where a.user_id = #{userId}
+	</select>
+	<select id="findHeartId">
+		select
+		    id
+		from heart
+		where user_id=#{userId}
+		And board_id=#{boardId}
+	</select>
+
+	<insert id="insertHeart">
+		insert into heart(user_id,board_id) values(#{userId}, #{boardId})
+	</insert>
+	<delete id="deleteHeart">
+		delete from heart
+		where id = #{id}
+	</delete>
+	<!-- 사용자가 좋아요를 눌렀는지 여부 -->
+	<select id="checkUserHeartBoard">
+		select 
+			count(*)
+			from heart
+			where board_id = #{boardId}
+			and user_id = #{userPk}
+	</select>
+	<!-- 좋아요 개수 -->
+	<select id="countHeartCount">
+		select
+			count(*)
+		from heart
+		where board_id = #{boardId}
+	</select>
+
+	<select id="findUserIdByUsername">
+		select
+		    id
+		from user
+		where userId=#{username}
+	</select>
 	<!--게시글 조회수 up-->
 	<update id="hitCountUp">
 		UPDATE board
@@ -28,7 +87,6 @@
 			content = #{content},
 			spot = #{spot},
 			hit = #{hit},
-			heart_count = #{heartCount},
 			coordinate = ST_GeomFromText('POINT(${longitude} ${latitude})'),
 			image_key = #{imageKey},
 			location_name = #{locationName}
@@ -56,7 +114,6 @@
 			content,
 			spot,
 			hit,
-			heart_count,
 			coordinate,
 			image_key,
 			location_name
@@ -70,8 +127,7 @@
 					 #{image},
 					 #{content},
 					 #{spot},
-					 #{hit},
-					 #{heartCount},
+					 0,
 					 ST_GeomFromText('POINT(${longitude} ${latitude})'),
 		          	#{imageKey},
 		          	#{locationName}
@@ -92,7 +148,6 @@
 			a.content as content,
 			a.spot as spot,
 			a.hit as hit,
-			a.heart_count as heartCount,
 			ST_X(a.coordinate) AS longitude,
 			ST_Y(a.coordinate) AS latitude,
 			a.location_name as locationName,
@@ -117,7 +172,6 @@
 			a.content as content,
 			a.spot as spot,
 			a.hit as hit,
-			a.heart_count as heartCount,
 			a.location_name as locationName,
 			ST_X(a.coordinate) AS longitude,
 			ST_Y(a.coordinate) AS latitude,
@@ -140,7 +194,6 @@
 			a.content as content,
 			a.spot as spot,
 			a.hit as hit,
-			a.heart_count as heartCount,
 			a.location_name as locationName,
 			ST_X(a.coordinate) AS longitude,
 			ST_Y(a.coordinate) AS latitude,

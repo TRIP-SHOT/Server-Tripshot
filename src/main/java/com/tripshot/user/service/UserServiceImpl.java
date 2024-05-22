@@ -6,12 +6,18 @@ import org.springframework.stereotype.Service;
 
 import com.tripshot.user.mapper.UserMapper;
 import com.tripshot.user.model.JoinDto;
+import com.tripshot.user.model.LoginResponseDTO;
+import com.tripshot.user.model.User;
+import com.tripshot.user.model.UserInfoDto;
+import com.tripshot.user.model.UserUpdateRequestDto;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 	
 	private final UserMapper mapper;
@@ -25,7 +31,6 @@ public class UserServiceImpl implements UserService {
 		if(isExists > 0) {
 			return false;
 		}
-		
 		//비밀번호 암호화
 		joinDto.setPassword(bCryptPasswordEncoder.encode(joinDto.getPassword()));
 		
@@ -33,5 +38,30 @@ public class UserServiceImpl implements UserService {
 		mapper.insertUser(joinDto);
 		return true;
 	}
+
+	@Override
+	public LoginResponseDTO findNicknameByUsename(String userId) {
+		return mapper.findNicknameByUsename(userId);
+	}
+
+	@Override
+	public UserInfoDto getUserInfo(Long userPk) {
+		System.out.println("userPk="+userPk);
+		UserInfoDto res = mapper.findUserById(userPk);
+		System.out.println(res);
+		return mapper.findUserById(userPk);
+	}
+
+	@Override
+	public int updateUser(UserUpdateRequestDto user) {
+		return mapper.updateUser(user);
+	}
+
+	@Override
+	public int withdraw(Long id) {
+		return mapper.withdraw(id);
+	}
+
+
 
 }

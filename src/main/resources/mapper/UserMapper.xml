@@ -4,6 +4,41 @@
    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace = "com.tripshot.user.mapper.UserMapper">
+	<update id="updateUser">
+		update user
+		set
+			nickname=#{nickname},
+			email=#{email}	
+		where id=#{id}
+	</update>
+
+	<select id="findImageKeyByUserId" resultType="String">
+		select 
+			image_key
+		from user
+		where userId= #{id}
+	</select>
+	
+	<select id="findUserById" resultType="UserInfoDto">
+		select
+			user_id as userId,
+			name,
+			nickname,
+			email,
+			profile_image as prifileImage
+			from user
+			where id=#{userPk}
+		
+	</select>
+	
+	<select id="findNicknameByUsename" parameterType="LoginResponseDTO">
+		select
+			nickname
+			from user
+			where user_id=#{userId}
+		
+	</select>
+
 	<select id="existByUserId" parameterType="String">
 		select
 			count(*)
@@ -30,4 +65,9 @@
 			FROM user
 			WHERE user_id=#{userId}
 	</select>
+	
+	<delete id="withdraw">
+		delete from user
+		where id = #{id}
+	</delete>
 </mapper>

@@ -28,6 +28,7 @@ public class SecurityConfig {
 
 	// JWTUtil 주입
 	private final JWTUtil jwtUtil;
+
 	public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
 		
 		this.authenticationConfiguration = authenticationConfiguration;
@@ -78,14 +79,18 @@ public class SecurityConfig {
 
 		// 경로별 인가 작업
 		http.authorizeHttpRequests((auth) -> auth
-				.anyRequest().permitAll());
-
+//				.anyRequest().permitAll());
 				//TODO
-//				.requestMatchers(HttpMethod.POST,"/login").permitAll()
-//				.requestMatchers(HttpMethod.POST,"/join").permitAll()
-//				.requestMatchers("/swagger-ui/index.html#").permitAll()
-//				.requestMatchers(HttpMethod.GET,"/boards/**").permitAll()
-//				.anyRequest().authenticated());
+				.requestMatchers("/map/**").permitAll()
+				.requestMatchers(HttpMethod.POST,"/login").permitAll()
+				.requestMatchers(HttpMethod.POST,"/join").permitAll()
+				.requestMatchers("/swagger-ui/index.html#").permitAll()
+						.requestMatchers("/boards/hearts").authenticated()
+				.requestMatchers(HttpMethod.GET,"/boards/**").permitAll()
+				.anyRequest().authenticated())
+				.sessionManagement((session) -> session
+		            .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+		
 				//TODO
 //				.requestMatchers("/boards").hasRole("USER").anyRequest().authenticated());
         http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);
