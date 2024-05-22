@@ -8,16 +8,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class CustomUserDetails implements UserDetails {
 	private final User user;
-	private Long id;
+//	private Long id;
 	public CustomUserDetails(User user) {
 		this.user = user;
 	}
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
+//	public Long getId() {
+//		return id;
+//	}
+//	public void setId(Long id) {
+//		this.id = id;
+//	}
 	public User getUser() {
 		return user;
 	}

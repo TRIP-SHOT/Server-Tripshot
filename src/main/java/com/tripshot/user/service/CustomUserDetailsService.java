@@ -30,13 +30,6 @@ public class CustomUserDetailsService implements UserDetailsService {
         log.info("****************************User retrieved: {}", user);
         return new CustomUserDetails(user);
 
-//		User user = mapper.findByUserId(username);
-//		log.info("user={}",user);
-//		if(user != null) {
-//			return new CustomUserDetails(user);
-//		}
-//
-//		return null;
     }
 
 }

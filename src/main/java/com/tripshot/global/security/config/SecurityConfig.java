@@ -83,8 +83,11 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.POST,"/login").permitAll()
 				.requestMatchers(HttpMethod.POST,"/join").permitAll()
 				.requestMatchers("/swagger-ui/index.html#").permitAll()
-//				.requestMatchers(HttpMethod.GET,"/boards/**").permitAll()
-				.anyRequest().authenticated());
+				.requestMatchers(HttpMethod.GET,"/boards/**").permitAll()
+				.anyRequest().authenticated())
+				.sessionManagement((session) -> session
+		            .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+		
 				//TODO
 //				.requestMatchers("/boards").hasRole("USER").anyRequest().authenticated());
         http.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class);

@@ -5,6 +5,8 @@ import com.tripshot.global.util.s3.S3Uploader;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,20 +18,30 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class BoardServiceImpl implements BoardService {
 	@Autowired
 	BoardMapper mapper;
 	private final String DIR = "/album";
 	private final S3Uploader s3Uploader;
 	@Override
-	public List<BoardResponseDto> selectAll(String userLoginId) {
-		List<BoardResponseDto> boards = mapper.selectAll(userLoginId);
-		//heart_count 로직 추가
-		//Is_Like 로직 추가
-		for(BoardResponseDto board: boards){
-
+	public List<BoardResponseDto> selectAll(Long userPk) {
+		List<BoardResponseDto> boards = mapper.selectAll();
+		
+		for(BoardResponseDto board : boards) {
+			//heart_count 로직 추가
+			//board_id가 heart talbe에 몇개 있는지 센다음 반환함.
+			board.setHeartCount(mapper.countHeartCount(board.getId()));
+			//Is_Like 로직 추가
+			//userPk와 boardId가 heart table에 존재(한개만 존재가 가능하다)하는 경우 true;
+			board.setIsLike(false);
+			if(mapper.checkUserHeartBoard(userPk,board.getId()) > 0) {
+				board.setIsLike(true);
+			}
+			log.info("board={}",board);
 		}
-		return mapper.selectAll(userLoginId);
+		
+		return boards;
 	}
 
 	@Override

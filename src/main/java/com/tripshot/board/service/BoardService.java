@@ -8,7 +8,7 @@ import com.tripshot.board.dto.Board;
 
 public interface BoardService {
 
-	List<BoardResponseDto> selectAll(String userLoginId);
+	List<BoardResponseDto> selectAll(Long userPk);
 	List<BoardResponseDto> search(String season, String startDate, String endDate, String keyword);
 	BoardResponseDto selectOne(Long id, String userLoginId);
 	int insertBoard(Board board);
