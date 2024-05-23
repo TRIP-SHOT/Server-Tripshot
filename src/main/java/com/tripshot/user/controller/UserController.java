@@ -22,10 +22,12 @@ import com.tripshot.user.model.CustomUserDetails;
 import com.tripshot.user.model.JoinDto;
 import com.tripshot.user.model.LoginDto;
 import com.tripshot.user.model.LoginResponseDTO;
+import com.tripshot.user.model.User;
 import com.tripshot.user.model.UserInfoDto;
 import com.tripshot.user.model.UserUpdateRequestDto;
 import com.tripshot.user.service.UserService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,9 +45,11 @@ public class UserController {
 	
 	//TODO 이거 왜안됌
 	@PostMapping("/login")
-	public ResponseEntity<ApiResponse<?>> login(@RequestBody LoginDto loginDto){
-		log.info("loginDto = {}",loginDto);
-		LoginResponseDTO response = service.findNicknameByUsename(loginDto.getUserId());
+	public ResponseEntity<ApiResponse<?>> login(HttpServletRequest request) throws Exception{
+		
+		String token = (String) request.getAttribute("token");
+        User user = (User)request.getAttribute("user");
+        LoginResponseDTO response = new LoginResponseDTO(user.getId(),user.getNickname());
 		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "로그인 성공", response), HttpStatus.OK);
 	}
 	

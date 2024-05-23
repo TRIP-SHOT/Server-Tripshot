@@ -78,11 +78,8 @@ public class BoardController {
 		List<BoardResponseDto> response = null;
 
 		if (season != null || startDate != null || endDate != null || keyword != null) {// 검색 조건이 있는 경우
-			System.out.println("조건있다.");
 			response = service.search(season, startDate, endDate, keyword);
 		} else { // 검색 기준이 없는 경우
-			System.out.println("조건없다.");
-
 			response = service.selectAll(userPk);
 			log.info("response={}", response);
 		}
@@ -121,7 +118,7 @@ public class BoardController {
 		}
 
 		List<BoardResponseDto> response = service.selectHearts(userPk);
-		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 목록 조회 성공", response), HttpStatus.OK);
+		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "좋아요한 게시글 목록 조회 성공", response), HttpStatus.OK);
 	}
 
 	/**

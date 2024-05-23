@@ -93,6 +93,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 		String token = jwtUtil.createJwt(userId, role, id, TOKEN_EXPIRED);
 		log.info("생성된 토큰 Bearer {}", token);
 		response.addHeader("Authorization", "Bearer " + token);
+        request.setAttribute("user", customUserDetails.getUser());
+
+        chain.doFilter(request, response);
 	}
 
 	// 로그인 실패시 실행하는 메소드
