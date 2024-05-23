@@ -110,4 +110,12 @@ public class BoardServiceImpl implements BoardService {
 		return hearts;
 	}
 
+	@Override
+	public Boolean checkBoardWriter(Long userId, Long boardId) {
+		if(mapper.checkBoardWriter(userId, boardId)>0) {
+			return true;
+		}
+		return false;
+	}
+
 }
