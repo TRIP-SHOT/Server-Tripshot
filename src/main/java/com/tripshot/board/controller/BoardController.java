@@ -6,6 +6,12 @@ import com.tripshot.board.dto.WriteBoardResponseDto;
 import com.tripshot.global.util.s3.S3Uploader;
 import com.tripshot.user.model.CustomUserDetails;
 import com.tripshot.user.service.UserService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.models.media.MediaType;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -189,11 +195,13 @@ public class BoardController {
 			CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 			userPk = userDetails.getUser().getId();
 		}
-		//게시글 작성자와 사용자가 동일한지 비교하는 메서드
-		if(!service.checkBoardWriter(userPk,id)) {
-			return new ResponseEntity(new ApiResponse(HttpStatus.FORBIDDEN, "게시글 삭제 권한이 없는 유저입니다.", "게시글 삭제 권한이 없는 유저입니다."), HttpStatus.OK);
+		// 게시글 작성자와 사용자가 동일한지 비교하는 메서드
+		if (!service.checkBoardWriter(userPk, id)) {
+			return new ResponseEntity(
+					new ApiResponse(HttpStatus.FORBIDDEN, "게시글 삭제 권한이 없는 유저입니다.", "게시글 삭제 권한이 없는 유저입니다."),
+					HttpStatus.OK);
 		}
-		
+
 		service.deleteBoard(id);
 		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 삭제 성공", "게시글 삭제 성공하였습니다."), HttpStatus.OK);
 	}
