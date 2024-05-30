@@ -60,7 +60,9 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public BoardResponseDto selectOne(Long id, String userLoginId) {
 		mapper.hitCountUp(id);
-		return mapper.selectOne(id);
+		BoardResponseDto board = mapper.selectOne(id);
+		board.setHeartCount(mapper.countHeartCount(board.getId()));
+		return board;
 	}
 
 	@Override
@@ -102,9 +104,18 @@ public class BoardServiceImpl implements BoardService {
 		//heart테이블을 순회하면서 나온 id를 board테이블에서 가져옴
 		List<BoardResponseDto> hearts = mapper.selectHearts(userId);
 		for(BoardResponseDto heart : hearts){
+			heart.setHeartCount(mapper.countHeartCount(heart.getId()));
 			heart.setIsLike(true);
 		}
 		return hearts;
+	}
+
+	@Override
+	public Boolean checkBoardWriter(Long userId, Long boardId) {
+		if(mapper.checkBoardWriter(userId, boardId)>0) {
+			return true;
+		}
+		return false;
 	}
 
 }

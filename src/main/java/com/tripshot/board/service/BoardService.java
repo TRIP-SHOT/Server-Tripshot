@@ -16,4 +16,5 @@ public interface BoardService {
 	int deleteBoard(Long id);
 	int update(Long userId, Long boardId);
 	List<BoardResponseDto> selectHearts(Long userId);
+	Boolean checkBoardWriter(Long userId, Long id);
 }

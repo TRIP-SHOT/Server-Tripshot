@@ -27,4 +27,5 @@ public interface BoardMapper {
 	int insertHeart(Long userId, Long boardId);
 	Long findHeartId(Long userId, Long boardId);
 	List<BoardResponseDto> selectHearts(Long userId);
+	int checkBoardWriter(Long userId, Long boardId);
 }

@@ -6,6 +6,12 @@ import com.tripshot.board.dto.WriteBoardResponseDto;
 import com.tripshot.global.util.s3.S3Uploader;
 import com.tripshot.user.model.CustomUserDetails;
 import com.tripshot.user.service.UserService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.models.media.MediaType;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -78,11 +84,8 @@ public class BoardController {
 		List<BoardResponseDto> response = null;
 
 		if (season != null || startDate != null || endDate != null || keyword != null) {// 검색 조건이 있는 경우
-			System.out.println("조건있다.");
 			response = service.search(season, startDate, endDate, keyword);
 		} else { // 검색 기준이 없는 경우
-			System.out.println("조건없다.");
-
 			response = service.selectAll(userPk);
 			log.info("response={}", response);
 		}
@@ -106,7 +109,7 @@ public class BoardController {
 	 * @return
 	 */
 	@GetMapping("/hearts")
-	public ResponseEntity<ApiResponse<List<BoardResponseDto>>> hearts(){
+	public ResponseEntity<ApiResponse<List<BoardResponseDto>>> hearts() {
 		// SecurityContextHolder에서 Authentication 객체를 가져옵니다.
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -121,7 +124,7 @@ public class BoardController {
 		}
 
 		List<BoardResponseDto> response = service.selectHearts(userPk);
-		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 목록 조회 성공", response), HttpStatus.OK);
+		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "좋아요한 게시글 목록 조회 성공", response), HttpStatus.OK);
 	}
 
 	/**
@@ -150,8 +153,7 @@ public class BoardController {
 		board.setImageKey(keyAndUrl[0]);
 		board.setImage(keyAndUrl[1]);
 		board.setUserId(userPk);
-		log.info("board={}",board);
-
+		log.info("board={}", board);
 
 		service.insertBoard(board);
 		WriteBoardResponseDto response = new WriteBoardResponseDto(board.getId());
@@ -167,6 +169,7 @@ public class BoardController {
 	 */
 	@PutMapping
 	public ResponseEntity<ApiResponse<?>> updateBoard(@ModelAttribute WriteBoardRequestDto request) throws IOException {
+
 		Board board = request.toBoard();
 		String[] keyAndUrl = s3Uploader.upload(request.getImage(), DIR);
 		board.setImageKey(keyAndUrl[0]);
@@ -184,13 +187,7 @@ public class BoardController {
 	 */
 	@DeleteMapping
 	public ResponseEntity<ApiResponse<?>> deleteBoard(@RequestParam("id") Long id) {
-		service.deleteBoard(id);
-		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 삭제 성공", "게시글 삭제 성공하였습니다."), HttpStatus.OK);
-	}
-
-	@PostMapping("/heart")
-	public ResponseEntity<ApiResponse<?>> addHeart(@RequestParam("id") Long boardId){
-		//사용자의 고유id와 boardId를 찾는다.
+		// 사용자의 고유id와 boardId를 찾는다.
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		Long userPk = 0L;
 		if (authentication != null && authentication.isAuthenticated()
@@ -198,9 +195,30 @@ public class BoardController {
 			CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 			userPk = userDetails.getUser().getId();
 		}
-		
-		int result = service.update(userPk,boardId);
-		return new ResponseEntity(new ApiResponse (HttpStatus.OK, "좋아요 요청 성공!", "좋아요 요청 성공!"), HttpStatus.OK);
+		// 게시글 작성자와 사용자가 동일한지 비교하는 메서드
+		if (!service.checkBoardWriter(userPk, id)) {
+			return new ResponseEntity(
+					new ApiResponse(HttpStatus.FORBIDDEN, "게시글 삭제 권한이 없는 유저입니다.", "게시글 삭제 권한이 없는 유저입니다."),
+					HttpStatus.OK);
+		}
+
+		service.deleteBoard(id);
+		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "게시글 삭제 성공", "게시글 삭제 성공하였습니다."), HttpStatus.OK);
+	}
+
+	@PostMapping("/heart")
+	public ResponseEntity<ApiResponse<?>> addHeart(@RequestParam("id") Long boardId) {
+		// 사용자의 고유id와 boardId를 찾는다.
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		Long userPk = 0L;
+		if (authentication != null && authentication.isAuthenticated()
+				&& !(authentication instanceof AnonymousAuthenticationToken)) {
+			CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+			userPk = userDetails.getUser().getId();
+		}
+
+		int result = service.update(userPk, boardId);
+		return new ResponseEntity(new ApiResponse(HttpStatus.OK, "좋아요 요청 성공!", "좋아요 요청 성공!"), HttpStatus.OK);
 	}
 
 }

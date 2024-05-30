@@ -84,7 +84,7 @@ public class SecurityConfig {
 				.requestMatchers("/map/**").permitAll()
 				.requestMatchers(HttpMethod.POST,"/login").permitAll()
 				.requestMatchers(HttpMethod.POST,"/join").permitAll()
-				.requestMatchers("/swagger-ui/index.html#").permitAll()
+				.requestMatchers("/v3/**", "/swagger-ui/**").permitAll()
 						.requestMatchers("/boards/hearts").authenticated()
 				.requestMatchers(HttpMethod.GET,"/boards/**").permitAll()
 				.anyRequest().authenticated())
